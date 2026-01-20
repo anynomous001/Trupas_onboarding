@@ -1,0 +1,420 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 14% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --card-hover: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --border: 220 13% 91%;
+    --foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 220 10% 5%;
+    --card: 220 10% 7%;
+    --card-hover: rgba(255, 255, 255, 0.05);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border: 220 13% 18%;
+    --foreground: 0 0% 98%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+
+  /* Dark mode specific overrides for onboarding */
+  .dark aside,
+  .dark header {
+    background-color: #0f1013 !important;
+  }
+
+  .dark .border-gray-200 {
+    border-color: #1f2937 !important;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Let Tailwind classes handle colors, with smooth transitions */
+body {
+  @apply transition-colors duration-200 ease-out;
+}
+
+/* Typography - Oxygen for headings and body text, Open Sans for taglines */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-oxygen), sans-serif;
+}
+
+body, p, span, div, a, button, input, textarea, label {
+  font-family: var(--font-oxygen), sans-serif;
+}
+
+/* Open Sans specifically for taglines/subtitles */
+.tagline, .subtitle, .description {
+  font-family: var(--font-open-sans), sans-serif;
+}
+
+/* Hide scrollbars utility */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Two-line clamp utility (no plugin) */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Spinning Electric Border for Glass Cards */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Scroll Reveal Animations */
+.reveal {
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+}
+
+/* Direction variants */
+.reveal-up {
+  transform: translateY(40px);
+}
+
+.reveal-up.reveal-visible {
+  transform: translateY(0);
+}
+
+.reveal-down {
+  transform: translateY(-40px);
+}
+
+.reveal-down.reveal-visible {
+  transform: translateY(0);
+}
+
+.reveal-left {
+  transform: translateX(-40px);
+}
+
+.reveal-left.reveal-visible {
+  transform: translateX(0);
+}
+
+.reveal-right {
+  transform: translateX(40px);
+}
+
+.reveal-right.reveal-visible {
+  transform: translateX(0);
+}
+
+.reveal-fade {
+  transform: none;
+}
+
+.reveal-fade.reveal-visible {
+  transform: none;
+}
+
+/* Floating Particle Animations */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-8px, -25px) scale(0.9);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(12px, -10px) scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  33% {
+    transform: translate(-15px, 20px) scale(1.15);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(18px, -18px) scale(0.85);
+    opacity: 0.6;
+  }
+}
+
+@keyframes float-fast {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  20% {
+    transform: translate(20px, -30px) scale(1.2);
+    opacity: 0.8;
+  }
+  40% {
+    transform: translate(-25px, 15px) scale(0.8);
+    opacity: 0.4;
+  }
+  60% {
+    transform: translate(15px, 25px) scale(1.1);
+    opacity: 0.7;
+  }
+  80% {
+    transform: translate(-20px, -15px) scale(0.9);
+    opacity: 0.6;
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 4s ease-in-out infinite;
+}
+
+/* Pulse Animations */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Smoke/Fog Drift Animations */
+@keyframes smoke-drift-slow {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(50px, -30px) rotate(5deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes smoke-drift-medium {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(-40px, 40px) rotate(-3deg);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.2;
+  }
+}
+
+@keyframes smoke-drift-fast {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(60px, 50px) rotate(8deg);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes smoke-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateY(-80px) scale(1.1);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.15;
+  }
+}
+
+.animate-smoke-drift-slow {
+  animation: smoke-drift-slow 20s ease-in-out infinite;
+}
+
+.animate-smoke-drift-medium {
+  animation: smoke-drift-medium 15s ease-in-out infinite;
+}
+
+.animate-smoke-drift-fast {
+  animation: smoke-drift-fast 12s ease-in-out infinite;
+}
+
+.animate-smoke-rise {
+  animation: smoke-rise 18s ease-in-out infinite;
+}
+
+/* Rainbow Button Border Animation */
+@keyframes rainbow-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.rainbow-button {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(12px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+  position: relative !important;
+  border: none !important;
+  isolation: isolate;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark .rainbow-button {
+  background: rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.rainbow-button:hover {
+  background: rgba(250, 250, 250, 0.7) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark .rainbow-button:hover {
+  background: rgba(10, 10, 10, 0.5) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.rainbow-button::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(
+    90deg,
+    #fff 0%,
+    #007AFF 14.28%,
+    #00CDFF 28.56%,
+    #007AFF 42.84%,
+    #00C7FF 57.12%,
+    #007AFF 71.4%,
+    #0070FF 85.68%,
+    #007AFF 100%
+  );
+  background-size: 200% 200%;
+  animation: rainbow-border 3s linear infinite;
+  border-radius: 9999px;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask: 
+    linear-gradient(#000 0 0) content-box, 
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  -webkit-mask-composite: exclude;
+  mask: 
+    linear-gradient(#000 0 0) content-box, 
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  padding: 3px;
+}
+
+/* Shimmer Button Animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+}
