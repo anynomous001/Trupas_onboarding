@@ -106,7 +106,7 @@ export default function Hero() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/register"
+            href="demo"
             className="group relative flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 overflow-hidden"
           >
             Get Started

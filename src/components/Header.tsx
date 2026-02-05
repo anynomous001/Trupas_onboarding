@@ -112,7 +112,7 @@ export default function Header() {
               </div>
             ) : (
               <Link
-                href={ROUTES.REGISTER}
+                href={'demo'}
                 className="group inline-flex items-center justify-center gap-2 bg-[#007AFF] hover:bg-[#0051D5] text-white px-8 py-4 rounded-full font-semibold transition-all text-base shadow-lg shadow-[#007AFF]/25 hover:shadow-[#007AFF]/40 min-w-[180px]"
               >
                 Get Started
