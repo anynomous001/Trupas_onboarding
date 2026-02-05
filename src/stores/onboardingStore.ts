@@ -126,12 +126,14 @@ export const useOnboardingStore = create<OnboardingState>()(
           if (status) {
             let updatedMerchant: Merchant | null = null;
             set((state: OnboardingState) => {
-              const emailVerified = !!(status.progress?.email_verified ?? status.emailVerified);
-              const phoneVerified = !!(status.progress?.phone_verified ?? status.phoneVerified);
-              const taxIdVerified = !!(status.progress?.tax_id_verified ?? status.taxIdVerified);
+              const statusAny = status as Record<string, unknown>;
+              const progressAny = statusAny.progress as Record<string, unknown> | undefined;
+              const emailVerified = !!(progressAny?.email_verified ?? statusAny.emailVerified);
+              const phoneVerified = !!(progressAny?.phone_verified ?? statusAny.phoneVerified);
+              const taxIdVerified = !!(progressAny?.tax_id_verified ?? statusAny.taxIdVerified);
 
               // Extract details if available
-              const rawDetails = status.account_details || status.merchant || status;
+              const rawDetails = (statusAny.account_details || statusAny.merchant || statusAny) as Record<string, unknown>;
 
               // Helper to split phone numbers
               const extractPhone = (raw: Record<string, unknown>): { phoneCountry: string; phoneNumber: string } => {
@@ -143,30 +145,30 @@ export const useOnboardingStore = create<OnboardingState>()(
 
               const phone = extractPhone(rawDetails);
 
-              updatedMerchant = status.merchant ? {
+              updatedMerchant = statusAny.merchant ? {
                 ...state.merchant,
-                ...status.merchant,
+                ...(statusAny.merchant as Merchant),
                 emailVerified,
                 phoneVerified,
                 taxIdVerified,
               } : (state.merchant ? { ...state.merchant, emailVerified, phoneVerified, taxIdVerified } : null) as Merchant | null;
 
               return {
-                merchantId: status.merchant_id || status.merchantId || state.merchantId,
-                accountStatus: status.account_status || status.accountStatus || state.accountStatus,
+                merchantId: (statusAny.merchant_id || statusAny.merchantId || state.merchantId) as string | null,
+                accountStatus: (statusAny.account_status || statusAny.accountStatus || state.accountStatus) as string | null,
                 verification: {
                   emailVerified,
                   phoneVerified,
                 },
                 merchant: updatedMerchant,
                 accountDetails: rawDetails && (rawDetails.email || rawDetails.phone || rawDetails.business_name) ? {
-                  contactName: rawDetails.contact_name || rawDetails.contactName || state.accountDetails?.contactName || '',
-                  workEmail: rawDetails.email || rawDetails.work_email || rawDetails.workEmail || state.accountDetails?.workEmail || '',
+                  contactName: (rawDetails.contact_name || rawDetails.contactName || state.accountDetails?.contactName || '') as string,
+                  workEmail: (rawDetails.email || rawDetails.work_email || rawDetails.workEmail || state.accountDetails?.workEmail || '') as string,
                   phoneCountry: phone.phoneCountry,
                   phoneNumber: phone.phoneNumber,
-                  businessName: rawDetails.business_name || rawDetails.businessName || state.accountDetails?.businessName || '',
-                  websiteUrl: rawDetails.business_url || rawDetails.businessUrl || rawDetails.websiteUrl || state.accountDetails?.websiteUrl || '',
-                  taxId: rawDetails.tax_id || rawDetails.taxId || state.accountDetails?.taxId || '',
+                  businessName: (rawDetails.business_name || rawDetails.businessName || state.accountDetails?.businessName || '') as string,
+                  websiteUrl: (rawDetails.business_url || rawDetails.businessUrl || rawDetails.websiteUrl || state.accountDetails?.websiteUrl || '') as string,
+                  taxId: (rawDetails.tax_id || rawDetails.taxId || state.accountDetails?.taxId || '') as string,
                 } : state.accountDetails,
               };
             });

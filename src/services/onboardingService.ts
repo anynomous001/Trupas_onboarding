@@ -276,28 +276,28 @@ export interface ValidateSessionResponse {
 
 function convertValidateSessionResponse(backend: Record<string, unknown>): ValidateSessionResponse {
     // Backend can return merchant nested or top-level fields
-    const merchant = backend.merchant ? convertMerchant(backend.merchant) : {
-        merchantId: backend.merchant_id || backend.merchantId || '',
-        contactName: backend.contact_name || backend.contactName || '',
-        email: backend.email || '',
-        phone: backend.phone || '',
-        businessName: backend.business_name || backend.businessName || '',
-        businessUrl: backend.business_url || backend.businessUrl || '',
-        taxId: backend.tax_id || backend.taxId || '',
-        emailVerified: !!(backend.email_verified ?? backend.emailVerified ?? backend.progress?.email_verified),
-        phoneVerified: !!(backend.phone_verified ?? backend.phoneVerified ?? backend.progress?.phone_verified),
-        taxIdVerified: !!(backend.tax_id_verified ?? backend.taxIdVerified ?? backend.progress?.tax_id_verified),
-        accountStatus: backend.account_status || backend.accountStatus || '',
+    const merchant = backend.merchant ? convertMerchant(backend.merchant as MerchantBackend) : {
+        merchantId: (backend.merchant_id || backend.merchantId || '') as string,
+        contactName: (backend.contact_name || backend.contactName || '') as string,
+        email: (backend.email || '') as string,
+        phone: (backend.phone || '') as string,
+        businessName: (backend.business_name || backend.businessName || '') as string,
+        businessUrl: (backend.business_url || backend.businessUrl || '') as string,
+        taxId: (backend.tax_id || backend.taxId || '') as string,
+        emailVerified: !!(backend.email_verified ?? backend.emailVerified ?? (backend.progress as Record<string, unknown>)?.email_verified),
+        phoneVerified: !!(backend.phone_verified ?? backend.phoneVerified ?? (backend.progress as Record<string, unknown>)?.phone_verified),
+        taxIdVerified: !!(backend.tax_id_verified ?? backend.taxIdVerified ?? (backend.progress as Record<string, unknown>)?.tax_id_verified),
+        accountStatus: (backend.account_status || backend.accountStatus || '') as string,
         termsAccepted: !!(backend.terms_accepted ?? backend.termsAccepted),
-        termsAcceptedAt: backend.terms_accepted_at || backend.termsAcceptedAt || '',
-        createdAt: backend.created_at || backend.createdAt || '',
-        updatedAt: backend.updated_at || backend.updatedAt || '',
+        termsAcceptedAt: (backend.terms_accepted_at || backend.termsAcceptedAt || '') as string,
+        createdAt: (backend.created_at || backend.createdAt || '') as string,
+        updatedAt: (backend.updated_at || backend.updatedAt || '') as string,
     };
 
     return {
         valid: !!backend.valid,
         merchant,
-        accountStatus: backend.account_status || backend.accountStatus || merchant.accountStatus,
+        accountStatus: (backend.account_status || backend.accountStatus || merchant.accountStatus) as string,
     };
 }
 
@@ -414,11 +414,11 @@ export interface AuthStatusResponse {
 
 function convertAuthStatusResponse(backendResponse: Record<string, unknown>): AuthStatusResponse {
     return {
-        merchantId: backendResponse.merchantId || backendResponse.merchant_id,
-        email: backendResponse.email,
-        businessName: backendResponse.businessName || backendResponse.business_name,
-        accountStatus: backendResponse.accountStatus || backendResponse.account_status,
-        emailVerified: backendResponse.emailVerified !== undefined ? backendResponse.emailVerified : backendResponse.email_verified,
+        merchantId: (backendResponse.merchantId || backendResponse.merchant_id) as string,
+        email: backendResponse.email as string,
+        businessName: (backendResponse.businessName || backendResponse.business_name) as string,
+        accountStatus: (backendResponse.accountStatus || backendResponse.account_status) as string,
+        emailVerified: (backendResponse.emailVerified !== undefined ? backendResponse.emailVerified : backendResponse.email_verified) as boolean,
     };
 }
 
@@ -528,7 +528,7 @@ export const onboardingService = {
     // Auth/Login
     validateSession: async (): Promise<ValidateSessionResponse> => {
         const response = await apiClient.get<ValidateSessionResponseBackend>('/auth/validate-session');
-        return convertValidateSessionResponse(response);
+        return convertValidateSessionResponse(response as unknown as Record<string, unknown>);
     },
 
     refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {
@@ -628,6 +628,6 @@ export const onboardingService = {
     // Get current auth status (for auto-redirect)
     getAuthStatus: async (): Promise<AuthStatusResponse> => {
         const response = await apiClient.get<AuthStatusResponseBackend>('/auth/status');
-        return convertAuthStatusResponse(response);
+        return convertAuthStatusResponse(response as unknown as Record<string, unknown>);
     },
 };
