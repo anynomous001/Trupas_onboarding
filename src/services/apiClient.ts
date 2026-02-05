@@ -1,16 +1,15 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
-let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
 // Helper to get token from Zustand persisted storage
 function getStoredToken(): string | null {
     if (typeof window === 'undefined') return null;
-    
+
     try {
         const storedData = localStorage.getItem('onboarding-storage');
         if (!storedData) return null;
-        
+
         const parsed = JSON.parse(storedData);
         return parsed.state?.accessToken || null;
     } catch (err) {
@@ -22,11 +21,11 @@ function getStoredToken(): string | null {
 // Helper to get refresh token from Zustand persisted storage
 function getStoredRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
-    
+
     try {
         const storedData = localStorage.getItem('onboarding-storage');
         if (!storedData) return null;
-        
+
         const parsed = JSON.parse(storedData);
         return parsed.state?.refreshToken || null;
     } catch (err) {
@@ -38,11 +37,11 @@ function getStoredRefreshToken(): string | null {
 // Helper to update tokens in Zustand persisted storage
 function updateStoredTokens(accessToken: string, refreshToken: string): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
         const storedData = localStorage.getItem('onboarding-storage');
         if (!storedData) return;
-        
+
         const parsed = JSON.parse(storedData);
         parsed.state.accessToken = accessToken;
         parsed.state.refreshToken = refreshToken;
@@ -74,18 +73,18 @@ async function refreshTokens(): Promise<string | null> {
             if (!response.ok) throw new Error('Refresh failed');
 
             const data = await response.json();
-            
+
             // API returns snake_case: access_token, refresh_token
             const newAccessToken = data.access_token || data.accessToken;
             const newRefreshToken = data.refresh_token || data.refreshToken;
-            
+
             // Update tokens in Zustand persisted storage
             if (newAccessToken && newRefreshToken) {
                 updateStoredTokens(newAccessToken, newRefreshToken);
                 console.log('✅ Token refreshed successfully');
                 return newAccessToken;
             }
-            
+
             throw new Error('Invalid refresh response');
         } catch (err) {
             console.error('❌ Token refresh failed:', err);
@@ -130,7 +129,7 @@ async function request<T>(
     if (response.status === 401 && retryCount === 0) {
         console.log('🔒 Got 401, attempting token refresh...');
         const newToken = await refreshTokens();
-        
+
         if (newToken) {
             console.log('🔄 Retrying request with new token...');
             // Retry the request with the new token
@@ -152,13 +151,13 @@ async function request<T>(
 export const apiClient = {
     get: <T>(endpoint: string, options?: RequestInit) =>
         request<T>(endpoint, { ...options, method: 'GET' }),
-    post: <T>(endpoint: string, body?: any, options?: RequestInit) =>
+    post: <T>(endpoint: string, body?: unknown, options?: RequestInit) =>
         request<T>(endpoint, {
             ...options,
             method: 'POST',
             body: body ? JSON.stringify(body) : undefined,
         }),
-    put: <T>(endpoint: string, body?: any, options?: RequestInit) =>
+    put: <T>(endpoint: string, body?: unknown, options?: RequestInit) =>
         request<T>(endpoint, {
             ...options,
             method: 'PUT',

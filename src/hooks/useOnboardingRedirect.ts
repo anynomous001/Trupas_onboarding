@@ -98,17 +98,18 @@ export function useOnboardingRedirect(
           console.log('✅ [RedirectHook] User is on the correct page');
         }
 
-      } catch (err: any) {
-        console.error('❌ [RedirectHook] Failed to check status:', err);
+      } catch (err) {
+        const error = err as Error;
+        console.error('❌ [RedirectHook] Failed to check status:', error);
 
         // If 401, tokens are invalid - clear them
-        if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
           console.log('🔓 [RedirectHook] Unauthorized! Clearing tokens and returning to login.');
           useOnboardingStore.getState().reset();
           router.push(ROUTES.LOGIN);
           return;
         } else {
-          setError(err.message || 'Failed to verify status');
+          setError(error.message || 'Failed to verify status');
         }
       } finally {
         setIsChecking(false);
@@ -116,7 +117,7 @@ export function useOnboardingRedirect(
     };
 
     checkStatusAndRedirect();
-  }, [merchantId, accessToken, currentPageRoute, options.skip, options.allowUnauthenticated]);
+  }, [merchantId, accessToken, currentPageRoute, options.skip, options.allowUnauthenticated, router]);
 
   return {
     isChecking,
@@ -151,9 +152,10 @@ export function useRequiredRoute(): {
         const status = await onboardingService.getAuthStatus();
         const route = getRouteFromAccountStatus(status.accountStatus);
         setRequiredRoute(route);
-      } catch (err: any) {
-        console.error('Failed to check auth status:', err);
-        setError(err.message || 'Failed to verify status');
+      } catch (err) {
+        const error = err as Error;
+        console.error('Failed to check auth status:', error);
+        setError(error.message || 'Failed to verify status');
       } finally {
         setIsChecking(false);
       }

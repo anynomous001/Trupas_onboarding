@@ -131,9 +131,10 @@ export default function Register() {
                 getRouteFromAccountStatus(response.merchant.accountStatus);
 
             router.push(nextRoute);
-        } catch (err: any) {
-            console.error('❌ Registration failed:', err);
-            setError(err.message || 'Failed to create account. Please try again.');
+        } catch (err) {
+            const error = err as Error;
+            console.error('❌ Registration failed:', error);
+            setError(error.message || 'Failed to create account. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -243,7 +244,7 @@ export default function Register() {
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
                             </div>
                             <p className="text-xs text-text-secondary">
-                                We'll send a verification link to this email.
+                                We&apos;ll send a verification link to this email.
                             </p>
                             {errors.workEmail && (
                                 <p className="text-sm text-red-500">{errors.workEmail.message}</p>

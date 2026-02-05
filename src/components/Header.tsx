@@ -174,7 +174,7 @@ export default function Header() {
               </>
             ) : (
               <Link
-                href={ROUTES.REGISTER}
+                href={'demo'}
                 className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/25"
                 onClick={() => setIsMenuOpen(false)}
               >

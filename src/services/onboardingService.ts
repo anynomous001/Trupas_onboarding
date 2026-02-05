@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import { AccountDetails, TaxValidationStatus, Merchant } from '../types/onboarding.types';
+import type { TaxValidationStatus, Merchant } from '../types/onboarding.types';
 
 // Backend merchant object (snake_case from API)
 export interface MerchantBackend {
@@ -274,7 +274,7 @@ export interface ValidateSessionResponse {
     accountStatus: string;
 }
 
-function convertValidateSessionResponse(backend: any): ValidateSessionResponse {
+function convertValidateSessionResponse(backend: Record<string, unknown>): ValidateSessionResponse {
     // Backend can return merchant nested or top-level fields
     const merchant = backend.merchant ? convertMerchant(backend.merchant) : {
         merchantId: backend.merchant_id || backend.merchantId || '',
@@ -371,7 +371,7 @@ export interface VerifyResponseBackend {
         url: string;
         message?: string;
     } | null;
-    account_details?: any;
+    account_details?: Record<string, unknown>;
 }
 
 // Frontend interface (camelCase for internal use) - Legacy for other verify endpoints
@@ -382,7 +382,7 @@ export interface VerifyResponse {
     refreshToken?: string;
     accountStatus: string;
     onboardingStep?: string;
-    accountDetails?: any;
+    accountDetails?: Record<string, unknown>;
     progress: {
         emailVerified: boolean;
         phoneVerified: boolean;
@@ -412,7 +412,7 @@ export interface AuthStatusResponse {
     emailVerified: boolean;
 }
 
-function convertAuthStatusResponse(backendResponse: any): AuthStatusResponse {
+function convertAuthStatusResponse(backendResponse: Record<string, unknown>): AuthStatusResponse {
     return {
         merchantId: backendResponse.merchantId || backendResponse.merchant_id,
         email: backendResponse.email,
@@ -549,7 +549,7 @@ export const onboardingService = {
         return convertLoginVerifyOTPResponse(response);
     },
 
-    register: async (data: any): Promise<RegisterResponse> => {
+    register: async (data: Record<string, unknown>): Promise<RegisterResponse> => {
         const response = await apiClient.post<RegisterResponseBackend>('/auth/register', data);
         return convertRegisterResponse(response);
     },
@@ -623,7 +623,7 @@ export const onboardingService = {
 
     // Status
     getOnboardingStatus: () =>
-        apiClient.get<any>('/merchants/me/onboarding-status'),
+        apiClient.get<Record<string, unknown>>('/merchants/me/onboarding-status'),
 
     // Get current auth status (for auto-redirect)
     getAuthStatus: async (): Promise<AuthStatusResponse> => {

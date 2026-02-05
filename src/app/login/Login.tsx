@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -12,7 +12,7 @@ import { OTPInput } from '@/components/forms/OTPInput';
 import { ROUTES } from '@/config/routes';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import { onboardingService } from '@/services/onboardingService';
-import { mapBackendStepToRoute, mapNextStepToRoute, getRouteFromAccountStatus } from '@/lib/routeMapper';
+
 import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
 
 const loginSchema = z.object({
@@ -30,11 +30,8 @@ export default function Login() {
   const router = useRouter();
   const { isChecking: isRedirectChecking } = useOnboardingRedirect(ROUTES.LOGIN, { allowUnauthenticated: true });
   const { merchantId, accessToken, refreshToken: storedRefreshToken, setAuth, reset } = useOnboardingStore();
-  const setEmailVerified = useOnboardingStore((state: any) => state.setEmailVerified);
-  const setPhoneVerified = useOnboardingStore((state: any) => state.setPhoneVerified);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [otpSent, setOtpSent] = useState(false);
   const [email, setEmail] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [otpError, setOtpError] = useState('');
@@ -42,77 +39,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
 
-  // Initial session check
-  useEffect(() => {
-    const checkSession = async () => {
-      if (!accessToken || !merchantId) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        console.log('🔄 Validating existing session...');
-        const response = await onboardingService.validateSession();
-        if (response.valid) {
-          console.log('✅ Session valid, redirecting...');
-          handlePostLoginRedirect(response.merchant);
-          return;
-        }
-      } catch (err: any) {
-        console.log('⚠️ Session invalid, trying refresh...');
-        if (storedRefreshToken) {
-          try {
-            const refreshResponse = await onboardingService.refreshToken(storedRefreshToken);
-            setAuth({
-              accessToken: refreshResponse.accessToken,
-              refreshToken: refreshResponse.refreshToken,
-              merchantId: merchantId,
-              accountStatus: 'unknown',
-            });
-            // Try validation again with new token
-            const retryResponse = await onboardingService.validateSession();
-            if (retryResponse.valid) {
-              handlePostLoginRedirect(retryResponse.merchant);
-              return;
-            }
-          } catch (refreshErr) {
-            console.error('❌ Refresh failed:', refreshErr);
-            reset();
-          }
-        } else {
-          reset();
-        }
-      }
-      setIsLoading(false);
-    };
-
-    if (!isRedirectChecking) {
-      checkSession();
-    }
-  }, [accessToken, merchantId, isRedirectChecking]);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const {
-    watch,
-    setValue,
-    formState: { errors: otpErrors },
-  } = useForm<OTPFormData>({
-    resolver: zodResolver(otpSchema),
-    defaultValues: {
-      otp: '',
-    },
-  });
-
-  const otp = watch('otp');
-
-  const handlePostLoginRedirect = (merchant: any) => {
+  const handlePostLoginRedirect = useCallback((merchant: Record<string, unknown> | null) => {
     if (!merchant) {
       console.warn('⚠️ [PostLogin] Merchant object missing, falling back to tax validation');
       router.push(ROUTES.ONBOARDING.VALIDATE_TAX);
@@ -138,7 +65,77 @@ export default function Login() {
 
     // 4. Default fallback: /onboarding/validate-tax
     router.push(ROUTES.ONBOARDING.VALIDATE_TAX);
-  };
+  }, [router]);
+
+  // Initial session check
+  useEffect(() => {
+    const checkSession = async () => {
+      if (!accessToken || !merchantId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        console.log('🔄 Validating existing session...');
+        const response = await onboardingService.validateSession();
+        if (response.valid) {
+          console.log('✅ Session valid, redirecting...');
+          handlePostLoginRedirect(response.merchant as unknown as Record<string, unknown>);
+          return;
+        }
+      } catch {
+        console.log('⚠️ Session invalid, trying refresh...');
+        if (storedRefreshToken) {
+          try {
+            const refreshResponse = await onboardingService.refreshToken(storedRefreshToken);
+            setAuth({
+              accessToken: refreshResponse.accessToken,
+              refreshToken: refreshResponse.refreshToken,
+              merchantId: merchantId,
+              accountStatus: 'unknown',
+            });
+            // Try validation again with new token
+            const retryResponse = await onboardingService.validateSession();
+            if (retryResponse.valid) {
+              handlePostLoginRedirect(retryResponse.merchant as unknown as Record<string, unknown>);
+              return;
+            }
+          } catch (refreshErr) {
+            console.error('❌ Refresh failed:', refreshErr);
+            reset();
+          }
+        } else {
+          reset();
+        }
+      }
+      setIsLoading(false);
+    };
+
+    if (!isRedirectChecking) {
+      checkSession();
+    }
+  }, [accessToken, merchantId, isRedirectChecking, handlePostLoginRedirect, reset, setAuth, storedRefreshToken]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const {
+    watch,
+    setValue,
+    formState: { errors: otpErrors },
+  } = useForm<OTPFormData>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: {
+      otp: '',
+    },
+  });
+
+  const otp = watch('otp');
 
   if (isLoading || isRedirectChecking) {
     return (
@@ -169,11 +166,11 @@ export default function Login() {
 
       // If account exists, send OTP
       await onboardingService.sendLoginOtp(data.email);
-      setOtpSent(true);
       setIsOtpDialogOpen(true);
-    } catch (err: any) {
-      console.error('❌ Login failed:', err);
-      setError(err.message || 'Failed to initiate login');
+    } catch (err) {
+      const error = err as Error;
+      console.error('❌ Login failed:', error);
+      setError(error.message || 'Failed to initiate login');
     } finally {
       setIsSubmitting(false);
     }
@@ -202,10 +199,11 @@ export default function Login() {
         setIsOtpDialogOpen(false);
 
         // Redirect based on flags
-        handlePostLoginRedirect(syncResponse || response.progress);
+        handlePostLoginRedirect((syncResponse || response.progress) as unknown as Record<string, unknown>);
 
-      } catch (err: any) {
-        setOtpError(err.message || 'Invalid OTP. Please try again.');
+      } catch (err) {
+        const error = err as Error;
+        setOtpError(error.message || 'Invalid OTP. Please try again.');
         setValue('otp', '');
       } finally {
         setVerifying(false);
@@ -325,7 +323,7 @@ export default function Login() {
             ))}
           </div>
           <p className="text-sm text-text-primary leading-relaxed mb-4">
-            "TruePas has completely revolutionized our check-in process. The identity verification is instant, and the merchant portal gives us the oversight we've always needed."
+            &quot;TruePas has completely revolutionized our check-in process. The identity verification is instant, and the merchant portal gives us the oversight we&apos;ve always needed.&quot;
           </p>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-card flex-shrink-0"></div>
@@ -342,7 +340,6 @@ export default function Login() {
         open={isOtpDialogOpen}
         onClose={() => {
           setIsOtpDialogOpen(false);
-          setOtpSent(false);
           setValue('otp', '');
           setOtpError('');
         }}
@@ -351,7 +348,7 @@ export default function Login() {
         <div className="space-y-6">
           <div className="text-center">
             <p className="text-sm text-text-secondary">
-              We've sent a 6-digit code to
+              We&apos;ve sent a 6-digit code to
             </p>
             <p className="text-text-primary font-semibold mt-1">{email}</p>
           </div>
@@ -381,7 +378,6 @@ export default function Login() {
                   className="flex-1 rounded-full"
                   onClick={() => {
                     setIsOtpDialogOpen(false);
-                    setOtpSent(false);
                     setValue('otp', '');
                     setOtpError('');
                   }}

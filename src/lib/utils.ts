@@ -5,9 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const trackEvent = (eventName: string, eventData?: Record<string, any>) => {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', eventName, eventData);
+export function trackEvent(eventName: string, eventData?: Record<string, unknown>) {
+  if (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).gtag) {
+    ((window as unknown as Record<string, unknown>).gtag as (event: string, name: string, data?: Record<string, unknown>) => void)('event', eventName, eventData);
   }
-};
+}
 

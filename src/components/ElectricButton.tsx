@@ -112,7 +112,7 @@ const ElectricButton = ({
 
       <ButtonElement
         className="button-container"
-        style={{ ["--electric-border-color" as any]: color, ["--f" as any]: filterURL }}
+        style={{ ["--electric-border-color" as string]: color, ["--f" as string]: filterURL }}
         {...buttonProps}
       >
         <div className="inner-container">

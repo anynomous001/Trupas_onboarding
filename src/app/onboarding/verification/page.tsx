@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Check, Pencil, Loader2, Mail, Phone } from 'lucide-react';
+import { Pencil, Loader2, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Dialog } from '@/components/ui/Dialog';
@@ -163,8 +163,9 @@ export default function Verification() {
             setIsOtpSent(true);
             setCountdown(60);
             setError('');
-        } catch (err: any) {
-            setError(err.message || 'Failed to send OTP');
+        } catch (err) {
+            const error = err as Error;
+            setError(error.message || 'Failed to send OTP');
         } finally {
             setIsSendingNewOtp(false);
         }
@@ -196,8 +197,9 @@ export default function Verification() {
                     setPhoneOtpValue('phoneOtp', '');
                 }
             }
-        } catch (err: any) {
-            setError(err.message || 'Verification failed');
+        } catch (err) {
+            const error = err as Error;
+            setError(error.message || 'Verification failed');
             if (!isEmailVerified) setEmailOtpValue('emailOtp', '');
             else setPhoneOtpValue('phoneOtp', '');
         } finally {
@@ -220,8 +222,9 @@ export default function Verification() {
             setIsChangeEmailDialogOpen(false);
             resetEmailForm();
             setError('');
-        } catch (err: any) {
-            setError(err.message || 'Failed to update email');
+        } catch (err) {
+            const error = err as Error;
+            setError(error.message || 'Failed to update email');
         } finally {
             setIsSendingNewOtp(false);
         }
@@ -243,8 +246,9 @@ export default function Verification() {
             setIsChangePhoneDialogOpen(false);
             resetPhoneForm();
             setError('');
-        } catch (err: any) {
-            setError(err.message || 'Failed to update phone');
+        } catch (err) {
+            const error = err as Error;
+            setError(error.message || 'Failed to update phone');
         } finally {
             setIsSendingNewOtp(false);
         }

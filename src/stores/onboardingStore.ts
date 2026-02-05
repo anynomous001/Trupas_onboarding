@@ -134,7 +134,7 @@ export const useOnboardingStore = create<OnboardingState>()(
               const rawDetails = status.account_details || status.merchant || status;
 
               // Helper to split phone numbers
-              const extractPhone = (raw: any): { phoneCountry: string; phoneNumber: string } => {
+              const extractPhone = (raw: Record<string, unknown>): { phoneCountry: string; phoneNumber: string } => {
                 const rawPhone = raw?.phone || raw?.phone_number || raw?.phoneNumber || '';
                 const match = typeof rawPhone === 'string' ? rawPhone.match(/^(\+\d{1,3})(\d+)$/) : null;
                 if (match) return { phoneCountry: match[1], phoneNumber: match[2] };

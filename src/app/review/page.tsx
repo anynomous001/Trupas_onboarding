@@ -36,9 +36,9 @@ export default function Review() {
             return;
         }
 
-        let pollInterval: ReturnType<typeof setInterval>;
-        let timerInterval: ReturnType<typeof setInterval>;
-        let mockSuccessTimer: ReturnType<typeof setTimeout>;
+        const pollInterval: ReturnType<typeof setInterval> = setInterval(() => { }, 0);
+        const timerInterval: ReturnType<typeof setInterval> = setInterval(() => { }, 0);
+        const mockSuccessTimer: ReturnType<typeof setTimeout> = setTimeout(() => { }, 0);
 
         const pollStatus = async () => {
             try {
@@ -57,22 +57,26 @@ export default function Review() {
                         await sync();
                     }
                 }
-            } catch (err: any) {
-                console.error('❌ Polling error:', err);
+            } catch (err) {
+                const error = err as Error;
+                console.error('❌ Polling error:', error);
             }
         };
 
         // Start polling
         pollStatus();
-        pollInterval = setInterval(pollStatus, 5000);
+        clearInterval(pollInterval);
+        const actualPollInterval = setInterval(pollStatus, 5000);
 
         // Timer for countdown display
-        timerInterval = setInterval(() => {
+        clearInterval(timerInterval);
+        const actualTimerInterval = setInterval(() => {
             setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
         }, 1000);
 
         // MOCK SUCCESS TIMER: Force success after 10 seconds
-        mockSuccessTimer = setTimeout(async () => {
+        clearTimeout(mockSuccessTimer);
+        const actualMockSuccessTimer = setTimeout(async () => {
             console.log('✨ Mocking successful validation...');
             setValidationResult('success');
             setTaxStatus('success');
@@ -87,11 +91,11 @@ export default function Review() {
         }, 10000); // 10 seconds delay
 
         return () => {
-            clearInterval(pollInterval);
-            clearInterval(timerInterval);
-            clearTimeout(mockSuccessTimer);
+            clearInterval(actualPollInterval);
+            clearInterval(actualTimerInterval);
+            clearTimeout(actualMockSuccessTimer);
         };
-    }, [merchantId, merchant?.taxIdVerified, merchant?.accountStatus, setTaxStatus, incrementValidationAttempts, sync]);
+    }, [merchantId, merchant, merchant?.taxIdVerified, merchant?.accountStatus, setTaxStatus, incrementValidationAttempts, sync]);
 
     if (isChecking) {
         return (
@@ -187,7 +191,7 @@ export default function Review() {
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-2xl font-bold text-text-primary">Validation Unsuccessful</h3>
-                                <p className="text-text-secondary">We couldn't verify your business information automatically.</p>
+                                <p className="text-text-secondary">We couldn&apos;t verify your business information automatically.</p>
                             </div>
 
                             <div className="bg-card border border-red-500/50 rounded-2xl p-6 text-left max-w-lg mx-auto shadow-sm">

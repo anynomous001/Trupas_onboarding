@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, CheckCircle2, XCircle, Clock, RefreshCw, FileText, AlertTriangle, ArrowRight, FileCheck, Briefcase, Lock, Pencil } from 'lucide-react';
+import { Loader2, XCircle, Clock, RefreshCw, FileText, AlertTriangle, ArrowRight, FileCheck, Briefcase, Lock, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Dialog } from '@/components/ui/Dialog';
@@ -85,7 +85,7 @@ const WhyThisMattersSection = () => {
 export default function ValidateTax() {
     const router = useRouter();
     const { isChecking } = useOnboardingRedirect(ROUTES.ONBOARDING.VALIDATE_TAX);
-    const { merchantId, merchant, setMerchant, setTaxStatus, setTaxValidationId, sync } = useOnboardingStore();
+    const { merchantId, merchant, setMerchant, setTaxStatus, setTaxValidationId } = useOnboardingStore();
 
     const [localStatus, setLocalStatus] = useState<TaxValidationStatus>('idle');
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
@@ -105,11 +105,12 @@ export default function ValidateTax() {
             const response = await onboardingService.initiateTaxValidation(merchantId);
             setTaxValidationId(response.validationId);
             router.push(ROUTES.REVIEW);
-        } catch (err: any) {
-            console.error('❌ Tax validation failed:', err);
+        } catch (err) {
+            const error = err as Error;
+            console.error('❌ Tax validation failed:', error);
             setLocalStatus('failed');
             setTaxStatus('failed');
-            setError(err.message || 'Validation service unavailable');
+            setError(error.message || 'Validation service unavailable');
         }
     };
 
@@ -126,9 +127,10 @@ export default function ValidateTax() {
             setNewTaxId('');
             setLocalStatus('idle');
             setTaxStatus('idle');
-        } catch (err: any) {
-            console.error('❌ Failed to update tax ID:', err);
-            setError(err.message || 'Failed to update Tax ID');
+        } catch (err) {
+            const error = err as Error;
+            console.error('❌ Failed to update tax ID:', error);
+            setError(error.message || 'Failed to update Tax ID');
         }
     };
 
@@ -150,7 +152,7 @@ export default function ValidateTax() {
                 <div>
                     <h2 className="text-3xl font-bold text-text-primary">Tax ID Validation</h2>
                     <p className="text-text-secondary mt-2">
-                        We're verifying your business tax identification number
+                        We&apos;re verifying your business tax identification number
                     </p>
                 </div>
 
@@ -193,7 +195,7 @@ export default function ValidateTax() {
                             <div>
                                 <h3 className="text-2xl font-semibold text-text-primary mb-2">Ready to Validate</h3>
                                 <p className="text-text-secondary mb-4">
-                                    We'll verify: <span className="font-mono font-medium">{taxId}</span>
+                                    We&apos;ll verify: <span className="font-mono font-medium">{taxId}</span>
                                 </p>
                             </div>
                             <div className="space-y-3">

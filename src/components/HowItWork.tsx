@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/ui/container';
 import { FadeIn } from '@/components/animations/FadeIn';
-import { FileText, Scan, Link2, Zap, Check } from 'lucide-react';
+import { FileText, Scan, Link2, Zap } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -73,15 +73,14 @@ export function HowItWorks() {
 
   // Separate effect for step observers - runs after refs are populated
   useEffect(() => {
-    let stepObservers: IntersectionObserver[] = [];
-    let rafId: number;
-    
+    const stepObservers: IntersectionObserver[] = [];
+
     // Wait for refs to be populated using requestAnimationFrame
-    rafId = requestAnimationFrame(() => {
+    const rafId = requestAnimationFrame(() => {
       // Set up observers for each step element
       stepRefs.current.forEach((stepElement, index) => {
         if (!stepElement) return;
-        
+
         const stepObserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
@@ -93,12 +92,12 @@ export function HowItWorks() {
               }
             });
           },
-          { 
+          {
             threshold: [0, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
             rootMargin: '0px'
           }
         );
-        
+
         stepObserver.observe(stepElement);
         stepObservers.push(stepObserver);
       });
@@ -129,13 +128,13 @@ export function HowItWorks() {
   };
 
   return (
-    <section 
-      id="how-it-works" 
+    <section
+      id="how-it-works"
       ref={sectionRef}
       className="relative pt-32 md:pt-40 pb-20 md:pb-32 bg-white dark:bg-black text-gray-900 dark:text-white "
     >
-   
-      
+
+
       <Container className="relative z-10  mt-52">
         {/* Interactive Layout */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-12">
@@ -151,93 +150,91 @@ export function HowItWorks() {
                 TruePas can help you check-in anywhere in seconds
               </p>
             </FadeIn>
-            
+
             {/* Steps List */}
             <div className="space-y-4 w-full">
-            {steps.map((step, index) => (
-              <motion.button
-                key={step.number}
-                onClick={() => scrollToStep(index)}
-                initial={false}
-                animate={{
-                  borderColor: activeStep === index ? 'rgba(0, 122, 255, 1)' : 'rgba(255, 255, 255, 0.1)',
-                  backgroundColor: activeStep === index ? 'rgba(0, 122, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                className={`relative w-full text-left p-6 rounded-xl border-2 overflow-hidden ${
-                  activeStep === index
+              {steps.map((step, index) => (
+                <motion.button
+                  key={step.number}
+                  onClick={() => scrollToStep(index)}
+                  initial={false}
+                  animate={{
+                    borderColor: activeStep === index ? 'rgba(0, 122, 255, 1)' : 'rgba(255, 255, 255, 0.1)',
+                    backgroundColor: activeStep === index ? 'rgba(0, 122, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  className={`relative w-full text-left p-6 rounded-xl border-2 overflow-hidden ${activeStep === index
                     ? 'shadow-lg shadow-[#007AFF]/30 ring-2 ring-[#007AFF]/30 border-[#007AFF]/50'
                     : 'border-gray-200/50 dark:border-white/20 hover:border-gray-300/50 dark:hover:border-white/20 hover:bg-gray-50/50 dark:hover:bg-white/10'
-                }`}
-              >
-                {/* Gradient effect when active */}
-                {activeStep === index && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#007AFF]/10 to-[#007AFF]/10 rounded-xl"></div>
-                )}
-                
-                <div className="relative flex items-center gap-4 z-10">
-                  {/* Check/Number Indicator */}
-                  <motion.div
-                    animate={{
-                      backgroundColor: activeStep === index 
-                        ? 'rgba(0, 122, 255, 1)' 
-                        : activeStep > index 
-                        ? 'rgba(0, 122, 255, 1)'
-                        : 'rgba(255, 255, 255, 0.1)',
-                    }}
-                    transition={{ duration: 0.3 }}
-                    className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center border transition-all relative ${
-                      activeStep === index
+                    }`}
+                >
+                  {/* Gradient effect when active */}
+                  {activeStep === index && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#007AFF]/10 to-[#007AFF]/10 rounded-xl"></div>
+                  )}
+
+                  <div className="relative flex items-center gap-4 z-10">
+                    {/* Check/Number Indicator */}
+                    <motion.div
+                      animate={{
+                        backgroundColor: activeStep === index
+                          ? 'rgba(0, 122, 255, 1)'
+                          : activeStep > index
+                            ? 'rgba(0, 122, 255, 1)'
+                            : 'rgba(255, 255, 255, 0.1)',
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center border transition-all relative ${activeStep === index
                         ? 'border-[#007AFF] text-white ring-2 ring-[#007AFF]/30'
                         : activeStep > index
-                        ? 'border-[#007AFF] text-white'
-                        : 'border-gray-300/50 dark:border-white/20 text-gray-600 dark:text-white/60'
-                    }`}
-                  >
-                   
-                      <span className="text-sm font-bold">{step.number}</span>
-                   
-                  </motion.div>
+                          ? 'border-[#007AFF] text-white'
+                          : 'border-gray-300/50 dark:border-white/20 text-gray-600 dark:text-white/60'
+                        }`}
+                    >
 
-                  {/* Step Title */}
-                  <div className="flex-1">
-                    {activeStep === index ? (
-                      <h3 className="font-semibold mb-1 bg-gradient-to-t from-gray-800 dark:from-gray-200 via-gray-900 dark:via-white to-gray-900 dark:to-white bg-clip-text text-transparent">
-                        {step.title}
-                      </h3>
-                    ) : (
-                      <motion.h3
-                        animate={{
-                          color: 'rgba(107, 114, 128, 0.8)',
-                        }}
-                        transition={{ duration: 0.3 }}
-                        className="font-semibold mb-1 dark:text-white/70"
-                      >
-                        {step.title}
-                      </motion.h3>
-                    )}
-                    <AnimatePresence>
-                      {activeStep === index && (
-                        <motion.p
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
+                      <span className="text-sm font-bold">{step.number}</span>
+
+                    </motion.div>
+
+                    {/* Step Title */}
+                    <div className="flex-1">
+                      {activeStep === index ? (
+                        <h3 className="font-semibold mb-1 bg-gradient-to-t from-gray-800 dark:from-gray-200 via-gray-900 dark:via-white to-gray-900 dark:to-white bg-clip-text text-transparent">
+                          {step.title}
+                        </h3>
+                      ) : (
+                        <motion.h3
+                          animate={{
+                            color: 'rgba(107, 114, 128, 0.8)',
+                          }}
                           transition={{ duration: 0.3 }}
-                          className="text-sm text-gray-600 dark:text-white/60 line-clamp-2 overflow-hidden"
+                          className="font-semibold mb-1 dark:text-white/70"
                         >
-                          {step.description}
-                        </motion.p>
+                          {step.title}
+                        </motion.h3>
                       )}
-                    </AnimatePresence>
+                      <AnimatePresence>
+                        {activeStep === index && (
+                          <motion.p
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-sm text-gray-600 dark:text-white/60 line-clamp-2 overflow-hidden"
+                          >
+                            {step.description}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
-                </div>
-              </motion.button>
-            ))}
+                </motion.button>
+              ))}
             </div>
           </div>
 
           {/* Right Side - Content & Image */}
-          <div 
+          <div
             ref={contentContainerRef}
             className="space-y-[30vh]"
           >
@@ -252,97 +249,95 @@ export function HowItWorks() {
                   opacity: activeStep === index ? 1 : 0.3,
                   scale: activeStep === index ? 1 : 0.95,
                 }}
-                transition={{ 
-                  duration: 0.5, 
-                  ease: [0.4, 0, 0.2, 1] 
+                transition={{
+                  duration: 0.5,
+                  ease: [0.4, 0, 0.2, 1]
                 }}
                 className="min-h-screen flex items-center"
               >
-                <div className={`relative bg-white/80 dark:bg-white/5 border-2 rounded-2xl p-8 lg:p-12 backdrop-blur-sm w-full overflow-hidden ${
-                  activeStep === index
-                    ? 'border-[#007AFF]/50 shadow-lg shadow-[#007AFF]/20'
-                    : 'border-gray-200/50 dark:border-white/10'
-                }`}>
+                <div className={`relative bg-white/80 dark:bg-white/5 border-2 rounded-2xl p-8 lg:p-12 backdrop-blur-sm w-full overflow-hidden ${activeStep === index
+                  ? 'border-[#007AFF]/50 shadow-lg shadow-[#007AFF]/20'
+                  : 'border-gray-200/50 dark:border-white/10'
+                  }`}>
                   {/* Gradient effect when active */}
                   {activeStep === index && (
                     <div className="absolute inset-0 bg-gradient-to-r from-[#007AFF]/10 to-[#007AFF]/10 rounded-2xl"></div>
                   )}
                   <div className="relative z-10">
-                  {/* Icon & Title */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: activeStep === index ? 1 : 0.5,
-                      y: activeStep === index ? 0 : 20
-                    }}
-                    transition={{ delay: 0.1, duration: 0.4 }}
-                    className="flex items-center gap-4 mb-6"
-                  >
-                    <div className="relative">
-                      <div
-                        className={`inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br ${
-                          activeStep === index 
-                            ? 'from-[#007AFF] to-[#007AFF]' 
+                    {/* Icon & Title */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{
+                        opacity: activeStep === index ? 1 : 0.5,
+                        y: activeStep === index ? 0 : 20
+                      }}
+                      transition={{ delay: 0.1, duration: 0.4 }}
+                      className="flex items-center gap-4 mb-6"
+                    >
+                      <div className="relative">
+                        <div
+                          className={`inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br ${activeStep === index
+                            ? 'from-[#007AFF] to-[#007AFF]'
                             : step.gradient
-                        }`}
-                      >
-                        <step.icon className="relative z-10 h-8 w-8 text-white" />
+                            }`}
+                        >
+                          <step.icon className="relative z-10 h-8 w-8 text-white" />
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-primary-400 uppercase tracking-wider mb-1">
-                        Step {step.number}
+                      <div>
+                        <div className="text-xs font-semibold text-primary-400 uppercase tracking-wider mb-1">
+                          Step {step.number}
+                        </div>
+                        <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                          {step.title}
+                        </h3>
                       </div>
-                      <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                        {step.title}
-                      </h3>
-                    </div>
-                  </motion.div>
+                    </motion.div>
 
-                  {/* Description */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: activeStep === index ? 1 : 0.5,
-                      y: activeStep === index ? 0 : 20
-                    }}
-                    transition={{ delay: 0.2, duration: 0.4 }}
-                    className="text-gray-700 dark:text-white/80 text-lg mb-6 leading-relaxed"
-                  >
-                    {step.description}
-                  </motion.p>
+                    {/* Description */}
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{
+                        opacity: activeStep === index ? 1 : 0.5,
+                        y: activeStep === index ? 0 : 20
+                      }}
+                      transition={{ delay: 0.2, duration: 0.4 }}
+                      className="text-gray-700 dark:text-white/80 text-lg mb-6 leading-relaxed"
+                    >
+                      {step.description}
+                    </motion.p>
 
-                  {/* Details */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: activeStep === index ? 1 : 0.5,
-                      y: activeStep === index ? 0 : 20
-                    }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                    className="text-gray-600 dark:text-white/60 mb-8 leading-relaxed"
-                  >
-                    {step.details}
-                  </motion.p>
+                    {/* Details */}
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{
+                        opacity: activeStep === index ? 1 : 0.5,
+                        y: activeStep === index ? 0 : 20
+                      }}
+                      transition={{ delay: 0.3, duration: 0.4 }}
+                      className="text-gray-600 dark:text-white/60 mb-8 leading-relaxed"
+                    >
+                      {step.details}
+                    </motion.p>
 
-                  {/* Image */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ 
-                      opacity: activeStep === index ? 1 : 0.5,
-                      scale: activeStep === index ? 1 : 0.95
-                    }}
-                    transition={{ delay: 0.4, duration: 0.4 }}
-                    className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border border-gray-300/50 dark:border-white/10 aspect-video"
-                  >
-                    <Image
-                      src={step.image}
-                      alt={step.title}
-                      fill
-                      className="object-cover transition-transform duration-700 hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </motion.div>
+                    {/* Image */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{
+                        opacity: activeStep === index ? 1 : 0.5,
+                        scale: activeStep === index ? 1 : 0.95
+                      }}
+                      transition={{ delay: 0.4, duration: 0.4 }}
+                      className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border border-gray-300/50 dark:border-white/10 aspect-video"
+                    >
+                      <Image
+                        src={step.image}
+                        alt={step.title}
+                        fill
+                        className="object-cover transition-transform duration-700 hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </motion.div>
                   </div>
                 </div>
               </motion.div>

@@ -52,7 +52,7 @@ export const OnboardingLayout = ({ children, currentStep }: OnboardingLayoutProp
             const isLastStep = index === steps.length - 1;
             // Line below should be blue if this step is completed or current
             const shouldShowBlueLine = current || completed;
-            
+
             return (
               <div key={step.number} className="relative">
                 <div className="flex items-start gap-4">
@@ -112,7 +112,7 @@ export const OnboardingLayout = ({ children, currentStep }: OnboardingLayoutProp
           <div className="relative pl-4">
             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"></div>
             <p className="text-lg text-text-primary leading-relaxed mb-3">
-              "Since switching to TruePas, our check-in times have dropped by 60%, and our guests love the seamless experience."
+              &quot;Since switching to TruePas, our check-in times have dropped by 60%, and our guests love the seamless experience.&quot;
             </p>
             <p className="text-xs text-primary">
               — Elena Rodriguez, COO at Meridian Cruise Lines
